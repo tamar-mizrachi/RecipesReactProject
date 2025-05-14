@@ -326,6 +326,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useAuth } from './authcontext';
+import axios from 'axios';
 
 const Register: React.FC = () => {
     const { registerUser } = useAuth();
@@ -339,65 +340,56 @@ const Register: React.FC = () => {
     const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
     const navigate = useNavigate();
 
-    const handleRegister = async () => {
-        const newErrors = {
-            fullName: !fullName,
-            username: !username,
-            password: !password,
-            phone: !phone,
-            email: !email,
-            tz: !tz,
-        };
-        setErrors(newErrors);
-
-        if (Object.values(newErrors).includes(true)) return;
-
-        try {
-            const res = await fetch('http://localhost:8080/api/user/sighin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    Id: 0,
-                    Name: fullName,
-                    UserName: username,
-                    Password: password,
-                    Phone: phone,
-                    Email: email,
-                    Tz: tz,
-                }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.message || 'Registration failed');
-            }
-
-            const user = {
-                Id: data.Id || data.id || 0,
-                fullName,
-                username,
-                password,
-                phone,
-                email,
-                tz,
-            };
-
-            registerUser(user);
-            alert('נרשמת בהצלחה!');
-            navigate('/');
-
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                console.error('Error during registration:', err.message);
-                alert('Registration failed: ' + err.message);
-            } else {
-                console.error('Unknown error during registration:', err);
-                alert('An unknown error occurred.');
-            }
-        }
+    
+const handleRegister = async (): Promise<void> => {
+    const newErrors = {
+        fullName: !fullName,
+        username: !username,
+        password: !password,
+        phone: !phone,
+        email: !email,
+        tz: !tz,
     };
+    setErrors(newErrors);
 
+    if (Object.values(newErrors).includes(true)) return;
+
+    try {
+        const response = await axios.post('http://localhost:8080/api/user/sighin', {
+            Id: 0,
+            Name: fullName,
+            UserName: username,
+            Password: password,
+            Phone: phone,
+            Email: email,
+            Tz: tz,
+        });
+
+        const data = response.data;
+
+        if (!data || !data.Id) {
+            throw new Error('Registration failed: No ID returned');
+        }
+
+        // שמירת פרטי המשתמש עם ה־ID מהשרת
+        registerUser({
+            Id: data.Id,
+            fullName,
+            username,
+            password,
+            phone,
+            email,
+            tz,
+        });
+
+        alert('נרשמת בהצלחה!');
+        navigate('/');
+
+    } catch (err: any) {
+        console.error('Error during registration:', err);
+        alert('Registration failed: ' + (err.response?.data?.message || err.message));
+    }
+};
     return (
         <Container maxWidth="xs" sx={{ mt: 8 }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '150px' }}>

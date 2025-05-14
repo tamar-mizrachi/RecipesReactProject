@@ -1,8 +1,9 @@
 
+
 import React, { useEffect, useState } from 'react';
-import { FormControl, InputLabel, MenuItem, Select, Typography, Grid, Box } from '@mui/material';
-import RecipeCard from './RecipeCard'; // כרטיס מתכון רגיל
-import { getAllRecipes } from './GetAllRecipes' // הפונקציה שמביאה את כל המתכונים
+import { FormControl, InputLabel, MenuItem, Select, Typography, Box } from '@mui/material';
+import RecipeCard from './RecipeCard';
+import { getAllRecipes } from './GetAllRecipes';
 
 const FilterByDuration = () => {
   const [recipes, setRecipes] = useState<any[]>([]);
@@ -21,15 +22,27 @@ const FilterByDuration = () => {
 
   useEffect(() => {
     if (selectedDuration) {
-      const filtered = recipes.filter(r => r.Duration === selectedDuration);
+      const filtered = recipes.filter(r => {
+        const duration = r.Duration;
+        if (selectedDuration === 'פחות מ-30 דקות') {
+          return duration < 30;
+        } else if (selectedDuration === '30-60 דקות') {
+          return duration >= 30 && duration <= 60;
+        } else if (selectedDuration === 'מעל 60 דקות') {
+          return duration > 60;
+        }
+        return false;
+      });
       setFilteredRecipes(filtered);
+    } else {
+      setFilteredRecipes([]);
     }
   }, [selectedDuration, recipes]);
 
   return (
     <div style={{ padding: '20px' }}>
       <Typography variant="h5" gutterBottom>
-        סינון לפי משך זמן⏱️
+        סינון לפי משך זמן ⏱️
       </Typography>
 
       <FormControl fullWidth>
@@ -41,20 +54,23 @@ const FilterByDuration = () => {
           onChange={(e) => setSelectedDuration(e.target.value)}
         >
           {durations.map((dur) => (
-            <MenuItem key={dur} value={dur}>{dur}</MenuItem>
+            <MenuItem key={dur} value={dur}>
+              {dur}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
-      <Box display="flex" flexWrap="wrap" mt={2}>
-      {filteredRecipes.map((recipe) => (
-        <Box key={recipe.Id} width={{ xs: '100%', sm: '50%', md: '25%' }} p={1}>
-          <RecipeCard recipe={recipe} />
-        </Box>
-      ))}
-    </Box>
 
+      <Box display="flex" flexWrap="wrap" mt={2}>
+        {filteredRecipes.map((recipe) => (
+          <Box key={recipe.Id} width={{ xs: '100%', sm: '50%', md: '25%' }} p={1}>
+            <RecipeCard recipe={recipe} />
+          </Box>
+        ))}
+      </Box>
     </div>
   );
 };
 
 export default FilterByDuration;
+

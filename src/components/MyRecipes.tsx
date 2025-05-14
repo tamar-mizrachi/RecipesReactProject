@@ -46,14 +46,17 @@ import { useRecipeContext } from './recipeContext';
 import { useUserContext } from './UserContext';
 import { Typography } from '@mui/material';
 import MyRecipeCard from './MyRecipeCard';
+import { Outlet } from 'react-router-dom';
 
 const MyRecipes = () => {
-  const { userId } = useUserContext();
   const { recipes } = useRecipeContext();
 
-  const myRecipes = recipes.filter((r:any) => r.UserId === userId);
+  const userId = JSON.parse(localStorage.getItem('user') || '{}').Id;
 
+
+  const myRecipes = recipes.filter((recipe: any) => recipe.UserId === userId);
   return (
+    <div>
     <Container sx={{ mt: 4 }}>
       <Typography variant="h5" gutterBottom>
         המתכונים שלי 👉
@@ -62,10 +65,14 @@ const MyRecipes = () => {
         {myRecipes.map((recipe:any) => (
           <Box key={recipe.Id} width={{ xs: '100%', sm: '48%', md: '30%', lg: '22%' }}>
             <MyRecipeCard recipe={recipe} />
+           
           </Box>
         ))}
       </Box>
+      
     </Container>
+     <Outlet />
+    </div>
   );
 };
 export default MyRecipes;

@@ -1,7 +1,8 @@
 // api/recipesApi.ts
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/recipes'; // שנה לפי ה־API שלך
+const API_URL = 'http://localhost:8080/api/recipe';
+
 
 export const getAllRecipes = async () => {
   try {

@@ -1,139 +1,139 @@
-/*
+
+
 import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  Button,
+  Typography,
+  Paper,
+  CircularProgress,
+  Alert,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+} from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Typography } from '@mui/material';
 
 const DeleteRecipe = () => {
-  const { recipeId } = useParams();
+  const { id } = useParams(); // חשוב: באות קטנה
   const navigate = useNavigate();
   const [recipe, setRecipe] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/recipe/${recipeId}`);//http://localhost:8080/api/recipe/delete/:id
+        const res = await fetch(`http://localhost:8080/api/recipe/${id}`);
         if (res.ok) {
           const data = await res.json();
           setRecipe(data);
         } else {
-          setError('לא מצאנו את המתכון');
+          setError('המתכון לא נמצא');
         }
       } catch (err) {
-        setError('שגיאה בהבאת נתוני המתכון');
+        setError('שגיאה בעת שליפת המתכון');
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchRecipe();
-  }, [recipeId]);
+    if (id) {
+      fetchRecipe();
+    } else {
+      setError('אין מזהה מתכון בכתובת');
+      setLoading(false);
+    }
+  }, [id]);
 
   const handleDelete = async () => {
-    const userId = localStorage.getItem('userId');
-    
-    if (userId !== recipe.user) {
-      alert('אין לך גישה למחוק את המתכון הזה');
-      navigate('/home-recipes');
-      return;
-    }
-
+    if (!recipe) return;
+    setDeleting(true);
     try {
-      const res = await fetch(`http://localhost:8080/api/recipe/delete/${recipeId}`, {
-        method: 'DELETE',
+      const res = await fetch(`http://localhost:8080/api/recipe/delete/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: recipe.id }),
       });
 
       if (res.ok) {
         alert('המתכון נמחק בהצלחה');
-        navigate('/home-recipes');
+        navigate('/home-recipes/my-recipes');
+        window.location.reload(); 
       } else {
         alert('שגיאה במחיקת המתכון');
       }
     } catch (err) {
-      alert('שגיאה במחיקת המתכון');
+      console.error(err);
+      alert('שגיאה בלתי צפויה');
+    } finally {
+      setDeleting(false);
     }
   };
 
+  if (loading) {
+    return (
+      <Box mt={10} textAlign="center">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   if (error) {
-    return <Typography>{error}</Typography>;
+    return <Alert severity="error">{error}</Alert>;
   }
 
   if (!recipe) {
-    return <Typography>טוען מתכון...</Typography>;
+    return <Alert severity="warning">לא ניתן לטעון את פרטי המתכון</Alert>;
   }
-
-  return (
-    <div style={{ marginTop: '160px', padding: '20px' }}>
-      <Typography variant="h4" sx={{ textAlign: 'center', mb: 4 }}>
-        האם אתה בטוח שברצונך למחוק את המתכון?
-      </Typography>
-      <Typography variant="h6" sx={{ textAlign: 'center', mb: 4 }}>
-        {recipe.Name}
-      </Typography>
-      <Button
-        onClick={handleDelete}
-        variant="contained"
-        color="secondary"
-        fullWidth
-        sx={{ mb: 2 }}
-      >
-        מחיקת מתכון
-      </Button>
-      <Button
-        onClick={() => navigate('/home-recipes')}
-        variant="contained"
-        color="primary"
-        fullWidth
-      >
-        חזור
-      </Button>
-    </div>
-  );
-};
-
-export default DeleteRecipe;*/
-
-
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Button } from '@mui/material';
-
-const DeleteRecipe = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [recipe, setRecipe] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchRecipe = async () => {
-      try {
-        const res = await axios.get(`http://localhost:3001/api/recipe/${id}`);
-        setRecipe(res.data);
-      } catch (error) {
-        console.error('שגיאה בטעינת מתכון:', error);
-      }
-    };
-    fetchRecipe();
-  }, [id]);
-
-  const handleDelete = async () => {
-    try {
-      await axios.delete(`http://localhost:3001/api/recipe/${id}`);
-      navigate('/recipes');
-    } catch (error) {
-      console.error('שגיאה במחיקה:', error);
-    }
+  const handleClose = () => {
+    navigate('/home-recipes/my-recipes');
   };
-
-  if (!recipe) return <Typography>טוען מתכון...</Typography>;
-
   return (
-    <div>
-      <Typography variant="h5">האם אתה בטוח שברצונך למחוק את המתכון?</Typography>
-      <Typography variant="h6">{recipe.Name}</Typography>
-      <Button onClick={handleDelete} variant="contained" color="error">מחק</Button>
-      <Button onClick={() => navigate('/recipes')} variant="outlined">ביטול</Button>
-    </div>
+ 
+  <Dialog open onClose={handleClose} fullWidth maxWidth="sm">
+      {loading ? (
+        <Box display="flex" justifyContent="center" p={4}>
+          <CircularProgress />
+        </Box>
+      ) : error ? (
+        <DialogContent>
+          <Alert severity="error">{error}</Alert>
+        </DialogContent>
+      ) : (
+        <>
+          <DialogTitle>האם אתה בטוח שברצונך למחוק את המתכון?</DialogTitle>
+          <DialogContent>
+            <Typography variant="h6">{recipe.Name}</Typography>
+            <Typography color="text.secondary">{recipe.Description}</Typography>
+            {recipe.Img && (
+              <Box mt={2} textAlign="center">
+                <img
+                  src={recipe.Img}
+                  alt={recipe.Name}
+                  style={{ maxWidth: '100%', borderRadius: '8px' }}
+                />
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDelete} color="error" variant="contained" disabled={deleting}>
+              מחק מתכון
+            </Button>
+            <Button onClick={handleClose} variant="outlined">
+              ביטול
+            </Button>
+          </DialogActions>
+          
+        </>
+      )}
+    </Dialog>
   );
 };
+
 
 export default DeleteRecipe;
-

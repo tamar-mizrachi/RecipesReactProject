@@ -3,9 +3,10 @@ import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './authcontext';
+import axios from 'axios';
 
 const Login: React.FC = () => {
-    const { setIsLoggedIn } = useAuth();
+    const { setIsLoggedIn, registerUser } = useAuth();
     const [UserName, setUserName] = useState('');
     const [Password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -15,32 +16,37 @@ const Login: React.FC = () => {
     });
 
     const handleLogin = async () => {
-        let newErrors = { UserName: !UserName, Password: !Password };
-        setErrors(newErrors);
-
-        if (newErrors.UserName || newErrors.Password) return;
-
         try {
-            const res = await fetch('http://localhost:8080/api/user/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ UserName, Password }),
+            const response = await axios.post('http://localhost:8080/api/user/login', {
+                UserName: UserName,
+                Password: Password,
             });
     
-            const data = await res.json();
-
-            if (!res.ok) throw new Error(data.message || 'Login failed');
-
-            console.log('Login successful:', data);
-            localStorage.setItem('userId', data.userId);
-            navigate('/home-recipes');
+            const data = response.data;
+    
+            if (!data || !data.Id) {
+                throw new Error('Login failed: No user ID returned');
+            }
+    
+            // המרת הנתונים לפי הסוג שהוגדר ב־authcontext
+            registerUser({
+                Id: data.Id,
+                fullName: data.Name,
+                username: data.UserName,
+                password: data.Password,
+                phone: data.Phone,
+                email: data.Email,
+                tz: data.Tz,
+            });
+    
             setIsLoggedIn(true);
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Invalid login credentials');
+            navigate('/home-recipes');
+        } catch (err: any) {
+            alert(err.response?.data?.message || 'Login failed');
+            console.error('Login error:', err);
         }
     };
-
+    
     return (
         <Container maxWidth="xs" sx={{ mt: 8 }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '200px' }}>

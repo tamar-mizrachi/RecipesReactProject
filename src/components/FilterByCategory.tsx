@@ -12,24 +12,18 @@ const FilterByCategory = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [filteredRecipes, setFilteredRecipes] = useState<any[]>([]);
 
-  // const { categoryid } = useAuth(); // קטגוריה של המשתמש המחובר
-  // const [categoryid, setCategoryId] = useState<any>(null); // קטגוריה של המשתמש המחובר 
   // שליפת כל המתכונים
   useEffect(() => {
     const fetchRecipes = async () => {
       const data = await getAllRecipes();
       setRecipes(data);
       console.log("מתכונים שהתקבלו:", data); // הדפסת המתכונים שהתקבלו
-      // אם יש categoryId מהמשתמש – מסננים לפיו כבר בהתחלה
-      // if (categoryid) {
+     
         const initialFiltered = data.filter(
           (recipe: any) => recipe.Categoryid == selectedCategoryId
         );
         setFilteredRecipes(initialFiltered);
-       //setSelectedCategoryId(categoryid); // מציבים אותו כברירת מחדל בבחירה
-      // } else {
-      //   setFilteredRecipes(data);
-      // }
+      
     };
     fetchRecipes();
   }, [selectedCategoryId]);

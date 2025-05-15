@@ -28,14 +28,12 @@ function App() {
               <Route path="login" element={<Login />} />
               <Route path="register" element={<Register />} />
             </Route>
-
             <Route path="/home-recipes" element={<HomeRecipes />}>
               <Route path="recipes" element={<Recipes />}>
                 <Route path="all-recipes" element={<AllRecipes />}/>
                   <Route path="by-category" element={<FilterByCategory />} />
                   <Route path="by-duration" element={<FilterByDuration />} />
                   <Route path="by-difficulty" element={<FilterByDifficulty />} />
-               
               </Route>
 
               <Route path="add-recipe" element={<AddRecipe />} />

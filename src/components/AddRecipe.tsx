@@ -214,53 +214,6 @@ const AddRecipe = () => {
   <span style={{ color: 'red' }}>יש לבחור קטגוריה</span>
 )}
 
-{/*           
-           <Select
-  label="קטגוריה"
-  required
-  value={categoryid}
-  onChange={(e) => {
-    const selected = e.target.value;
-    setCategoryId(selected); // לעדכן סטייט מקומי
-    setValue('Categoryid', selected);
- // לעדכן גם את React Hook Form
-  }}
->
-  {categories.map((cat) => (
-    <MenuItem key={cat.Id} value={cat.Id}>
-      {cat.Name}
-    </MenuItem>
-  ))}
-</Select> */}
-
-
-          {/* {categories.map((cat) => (
-            
-            <Box key={cat.Id} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <TextField
-                value={cat.editing ? cat.tempName : cat.Name}
-                onChange={(e) => {
-                  const updated = categories.map((c) =>
-                    c.Id === cat.Id ? { ...c, tempName: e.target.value } : c
-                  );
-                  setCategories(updated);
-                }}
-                fullWidth
-                disabled={!cat.editing}
-              /> 
-               <Button
-                variant={watch('Categoryid') === cat.Id ? 'contained' : 'outlined'}
-                onClick={() => {
-                  setValue('Categoryid', cat.Id);
-                  setCategoryId(cat.Id); // עדכון דרך AuthContext
-                }}
-              >
-                בחר
-              </Button>  */}
-
-
-            {/* </Box>
-          ))} */}
 
           <Box sx={{ display: 'flex', gap: 1 }}>
             <TextField

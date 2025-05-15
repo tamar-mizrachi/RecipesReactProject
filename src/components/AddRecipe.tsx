@@ -47,8 +47,7 @@ const AddRecipe = () => {
   const [newCategory, setNewCategory] = useState('');
   const [userId, setUserId] = useState('');
   const navigate = useNavigate();
-  const { setCategoryId } = useAuth();
-const [categoryid, setCategoryIdState] = useState('');  
+//const [categoryid, setCategoryIdState] = useState('');  
   const {
     register,
     handleSubmit,
@@ -90,9 +89,9 @@ const [categoryid, setCategoryIdState] = useState('');
   });
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user?.Id) {
-      setUserId(user.Id);
+    const user = JSON.parse(localStorage.getItem('userId') || '{}');
+    if (user) {
+      setUserId(user);
     }
   }, []);
 

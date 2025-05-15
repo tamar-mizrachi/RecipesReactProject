@@ -51,10 +51,10 @@ import { Outlet } from 'react-router-dom';
 const MyRecipes = () => {
   const { recipes } = useRecipeContext();
 
-  const userId = JSON.parse(localStorage.getItem('user') || '{}').Id;
+  const userId = localStorage.getItem('userId');
 
 
-  const myRecipes = recipes.filter((recipe: any) => recipe.UserId === userId);
+  const myRecipes = recipes.filter((recipe: any) => recipe.UserId == userId);
   return (
     <div>
     <Container sx={{ mt: 4 }}>

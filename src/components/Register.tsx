@@ -356,7 +356,7 @@ const handleRegister = async (): Promise<void> => {
 
     try {
         const response = await axios.post('http://localhost:8080/api/user/sighin', {
-            Id: 0,
+            //Id: 0,
             Name: fullName,
             UserName: username,
             Password: password,

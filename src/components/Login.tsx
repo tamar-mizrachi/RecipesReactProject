@@ -23,7 +23,7 @@ const Login: React.FC = () => {
             });
     
             const data = response.data;
-    
+
             if (!data || !data.Id) {
                 throw new Error('Login failed: No user ID returned');
             }
@@ -40,6 +40,7 @@ const Login: React.FC = () => {
             });
     
             setIsLoggedIn(true);
+            localStorage.setItem('userId',data.Id)
             navigate('/home-recipes');
         } catch (err: any) {
             alert(err.response?.data?.message || 'Login failed');

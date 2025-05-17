@@ -5,7 +5,6 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Recipes from './components/Recipes';
 import AddRecipe from './components/AddRecipe.tsx';
-import ProtectedRoute from './components/ProtectedRoute.tsx';
 import { Box } from '@mui/material';
 import HomeRecipes from './components/HomeRecipes.tsx';
 import EditRecipe from './components/EditRecipe.tsx';
@@ -30,19 +29,17 @@ function App() {
             </Route>
             <Route path="/home-recipes" element={<HomeRecipes />}>
               <Route path="recipes" element={<Recipes />}>
-                <Route path="all-recipes" element={<AllRecipes />}/>
-                  <Route path="by-category" element={<FilterByCategory />} />
-                  <Route path="by-duration" element={<FilterByDuration />} />
-                  <Route path="by-difficulty" element={<FilterByDifficulty />} />
+                <Route path="all-recipes" element={<AllRecipes />} />
+                <Route path="by-category" element={<FilterByCategory />} />
+                <Route path="by-duration" element={<FilterByDuration />} />
+                <Route path="by-difficulty" element={<FilterByDifficulty />} />
               </Route>
-
               <Route path="add-recipe" element={<AddRecipe />} />
-
               <Route path="my-recipes" element={<MyRecipes />}>
                 <Route path="edit-recipe/:id" element={<EditRecipe />} />
                 <Route path="delete-recipe/:id" element={<DeleteRecipe />} />
               </Route>
-              </Route>
+            </Route>
           </Routes>
         </Box>
       </RecipeProvider>
